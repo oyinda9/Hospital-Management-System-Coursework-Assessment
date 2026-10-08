@@ -1,0 +1,21 @@
+# Environment variables (secrets - never commit these)
+.env
+config/config.env
+
+# Dependencies
+node_modules/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build output (if this project has one)
+dist/
+build/
+
+# Test coverage (once you start adding tests)
+coverage/
