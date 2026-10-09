@@ -80,3 +80,8 @@ const appointmentSchema = new mongoose.Schema({
 })
 
 export const Appointment = mongoose.model("Appointment", appointmentSchema);
+// Fix for D9: the database refuses a second appointment with the same patient,
+// doctor and date. A check in the controller alone is not enough, because 10
+// simultaneous requests would all pass it before any of them was saved.
+// Limitation: a patient cannot re-request the same doctor and date after a rejection.
+appointmentSchema.index({ patientId: 1, doctorId: 1, appointment_date: 1 }, { unique: true });
