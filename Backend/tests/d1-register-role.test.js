@@ -27,7 +27,7 @@ describe("D1 - public registration and roles", () => {
     const res = await request(app)
       .post("/api/v1/user/patient/register")
       .send(payload());
-    console.log("DEBUG register:", res.status, res.body);
+    // console.log("DEBUG register:", res.status, res.body);
     expect(res.status).toBe(200);
 
     const stored = await User.findOne({ email: "d1.test@example.com" });

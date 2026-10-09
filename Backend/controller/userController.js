@@ -14,7 +14,7 @@ export const patientRegister = catchAsyncErrors(async (req, res, next) => {
     gender,
     aadhar,
     dob,
-    role,
+   // role is included in the payload, but it should not be accepted from the client for security reasons.
   } = req.body;
   if (
     !firstName ||
@@ -24,8 +24,8 @@ export const patientRegister = catchAsyncErrors(async (req, res, next) => {
     !password ||
     !gender ||
     !aadhar ||
-    !dob ||
-    !role
+    !dob 
+  //role is included in the payload, but it should not be accepted from the client for security reasons.
   ) {
     return next(new ErrorHandler("Please Fill Full Form!", 400));
   }
@@ -44,7 +44,7 @@ export const patientRegister = catchAsyncErrors(async (req, res, next) => {
     gender,
     dob,
     aadhar,
-    role,
+    role: "Patient", // fixed on the server; callers cannot choose it (fix for D1)
   });
   generateToken(user, "User Registered", 200, res);
 });
