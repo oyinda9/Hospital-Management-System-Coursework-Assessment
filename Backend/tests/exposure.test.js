@@ -60,4 +60,15 @@ describe("D10 and D3 - authentication responses", () => {
     const res = await login();
     expect(res.headers["set-cookie"].join(";")).toMatch(/HttpOnly/i);
   });
+    // D3: in production the cookie must only travel over HTTPS (Secure flag).
+  it("marks the auth cookie Secure when running in production", async () => {
+    const original = process.env.NODE_ENV;
+    process.env.NODE_ENV = "production";
+    try {
+      const res = await login();
+      expect(res.headers["set-cookie"].join(";")).toMatch(/Secure/i);
+    } finally {
+      process.env.NODE_ENV = original;
+    }
+  });
 });
