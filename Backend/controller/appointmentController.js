@@ -89,26 +89,56 @@ export const getAllAppointments = catchAsyncErrors(async (req, res, next) => {
     })
 })
 
-
-export const updateAppointmentStatus = catchAsyncErrors(async (req,res,next)=>{
-    const {id} = req.params;
+// Fix for D5: the updateAppointmentStatus function was rewritten to only accept the "status" field from the request body, and to reject any invalid status values.
+// export const updateAppointmentStatus = catchAsyncErrors(async (req,res,next)=>{
+//     const {id} = req.params;
  
-       let appointment = await Appointment.findById(id)
-    if(!appointment){
-       return next(new ErrorHandler("Appointment not found!", 404)) 
-    }
-    appointment = await Appointment.findByIdAndUpdate(id, req.body, {
-        new : true,
-        runValidators: true,
-        useFindAndModify: false
-    } )
-    res.status(200).json({
-        success: true,
-        message: "Appointment Status Updated!",
-        appointment
-    })
-})
+//        let appointment = await Appointment.findById(id)
+//     if(!appointment){
+//        return next(new ErrorHandler("Appointment not found!", 404)) 
+//     }
+//     appointment = await Appointment.findByIdAndUpdate(id, req.body, {
+//         new : true,
+//         runValidators: true,
+//         useFindAndModify: false
+//     } )
+//     res.status(200).json({
+//         success: true,
+//         message: "Appointment Status Updated!",
+//         appointment
+//     })
+// })
 
+export const updateAppointmentStatus = catchAsyncErrors(async (req, res, next) => {
+  const { id } = req.params;
+
+  // Fix for D5: only the "status" field is read from the request body.
+  // Before, the whole req.body was written to the database, so an admin request
+  // could also overwrite patient, doctor or date fields (mass assignment).
+  const { status } = req.body;
+
+  // Fix for D5: reject any value that is not one of the three allowed statuses.
+  if (!["Pending", "Accepted", "Rejected"].includes(status)) {
+    return next(new ErrorHandler("Status must be Pending, Accepted or Rejected!", 400));
+  }
+
+  let appointment = await Appointment.findById(id);
+  if (!appointment) {
+    return next(new ErrorHandler("Appointment not found!", 404));
+  }
+
+  appointment = await Appointment.findByIdAndUpdate(
+    id,
+    { status },
+    { new: true, runValidators: true }
+  );
+
+  res.status(200).json({
+    success: true,
+    message: "Appointment Status Updated!",
+    appointment,
+  });
+});
 
 export const deleteAppointment = catchAsyncErrors(async(req,res,next)=>{
     const {id} = req.params;
