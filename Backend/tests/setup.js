@@ -15,7 +15,9 @@ const REAL_MODE = process.env.TEST_DB === "real";
 // ---- Real mode only: read the Atlas connection string from config.env ----
 let realUri;
 if (REAL_MODE) {
-  config({ path: fileURLToPath(new URL("../config/config.env", import.meta.url)) });
+  config({
+    path: fileURLToPath(new URL("../config/config.env", import.meta.url)),
+  });
   realUri = process.env.MONGO_URI;
   if (!realUri) throw new Error("MONGO_URI not found in config/config.env");
 }
@@ -40,8 +42,8 @@ vi.mock("../database/dbConnection.js", () => ({
   default: vi.fn(),
 }));
 
-let mongod;   // the in-memory server (dummy mode only)
-let dbName;   // the temporary database name (real mode only)
+let mongod; // the in-memory server (dummy mode only)
+let dbName; // the temporary database name (real mode only)
 
 // Runs ONCE before the tests in a file.
 beforeAll(async () => {
@@ -53,6 +55,8 @@ beforeAll(async () => {
     mongod = await MongoMemoryServer.create();
     await mongoose.connect(mongod.getUri());
   }
+  // Wait until every model's indexes (such as the unique email index) exist before tests run.
+  await Promise.all(Object.values(mongoose.models).map((m) => m.init()));
 });
 
 // Runs after EVERY test: empty all collections (in the temporary database only).

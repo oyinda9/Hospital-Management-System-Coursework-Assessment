@@ -12,11 +12,15 @@ const userSchema = new mongoose.Schema({
     lastName:{
         type: String,
         required: true,
+        
         minLength:[2, "Last Name must contain atleast 2 characters!"]
     },
     email:{
         type: String,
         required: true,
+         // Fix for D12: the database now rejects a second account with the same email,
+        // even when two registration requests arrive at the same moment.
+        unique: true,
         validate : [validator.isEmail, "Please provide a valid Email!"]
     },
     phone:{
