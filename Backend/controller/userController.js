@@ -121,14 +121,34 @@ export const addNewAdmin = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
+// export const getAllDoctors = catchAsyncErrors(async (req, res, next) => {
+//   const doctors = await User.find({ role: "Doctor" });
+//   res.status(200).json({
+//     success: true,
+//     doctors,
+//   });
+// });
+// Fix for D2: the public endpoint returns only what the booking form needs.
+// Before, it returned every field of every doctor record, including email, phone,
+// date of birth and government ID, to anyone without logging in.
 export const getAllDoctors = catchAsyncErrors(async (req, res, next) => {
-  const doctors = await User.find({ role: "Doctor" });
-  res.status(200).json({
-    success: true,
-    doctors,
-  });
+    const doctors = await User.find({ role: "Doctor" })
+        .select("firstName lastName doctrDptmnt doctrAvatar");
+    res.status(200).json({
+        success: true,
+        doctors,
+    });
 });
 
+// Fix for D2: the full doctor records are still available, but only to a logged-in admin
+// (the route for this function uses isAdminAuthenticated). The admin Doctors page needs them.
+export const getAllDoctorsAdmin = catchAsyncErrors(async (req, res, next) => {
+    const doctors = await User.find({ role: "Doctor" });
+    res.status(200).json({
+        success: true,
+        doctors,
+    });
+});
 export const getUserDetails = catchAsyncErrors(async (req, res, next) => {
   const user = req.user;
   res.status(200).json({
