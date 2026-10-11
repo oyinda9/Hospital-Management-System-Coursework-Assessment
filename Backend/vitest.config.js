@@ -1,4 +1,4 @@
-//Configuration file for vitest , the test runner used in this project.
+// Configuration file for vitest, the test runner used in this project.
 import { defineConfig } from "vitest/config";
 
 export default defineConfig({
@@ -8,5 +8,11 @@ export default defineConfig({
     hookTimeout: 120000,
     include: ["**/*.test.js"],
     exclude: ["node_modules", "dist"],
+    coverage: {
+      provider: "v8",
+      reporter: ["text", "html"],
+      // Measure only the application code, not the tests, scripts or config.
+      include: ["controller/**", "middlewares/**", "models/**", "router/**", "utils/**"],
+    },
   },
 });
