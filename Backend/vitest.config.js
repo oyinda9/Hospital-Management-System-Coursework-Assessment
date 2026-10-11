@@ -12,7 +12,19 @@ export default defineConfig({
       provider: "v8",
       reporter: ["text", "html"],
       // Measure only the application code, not the tests, scripts or config.
-      include: ["controller/**", "middlewares/**", "models/**", "router/**", "utils/**"],
+      include: [
+        "controller/**",
+        "middlewares/**",
+        "models/**",
+        "router/**",
+        "utils/**",
+      ], // Quality gate: this makes sure that the  run fails if coverage drops below these measured-level floors.
+      thresholds: {
+        statements: 70,
+        branches: 50,
+        functions: 65,
+        lines: 70,
+      },
     },
   },
 });
