@@ -15,6 +15,7 @@ export const generateToken = (user, message, statusCode, res) => {
         success: true,
         message,
         user: safeUser,
-        token, // D3 (still open): to be removed once the frontends are confirmed not to use it
+        // Fix for D3: the token is no longer returned in the JSON body. The frontends only use
+        // the HttpOnly cookie (searching both frontends for "token" found no matches).
     })
 }
