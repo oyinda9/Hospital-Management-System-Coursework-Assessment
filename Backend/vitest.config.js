@@ -20,11 +20,12 @@ export default defineConfig({
         "utils/**",
       ], // Quality gate: this makes sure that the  run fails if coverage drops below these measured-level floors.
       thresholds: {
-        statements: 70,
+        statements: 99,
         branches: 50,
         functions: 65,
         lines: 70,
       },
     },
+    
   },
 });
