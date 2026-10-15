@@ -14,8 +14,9 @@ const Doctors = () => {
     const fetchDoctors = async () => {
       try {
         const { data } = await axios.get(
-          "http://localhost:4000/api/v1/user/doctors",
-          { withCredentials: true }
+          // "http://localhost:4000/api/v1/user/doctors", wrong endpoint, only returns name and department
+          "http://localhost:4000/api/v1/user/admin/doctors",
+          { withCredentials: true },
         );
         setDoctors(data.doctors);
       } catch (error) {
@@ -28,7 +29,7 @@ const Doctors = () => {
   }, []);
 
   if (loading) {
-    return <Loading/> 
+    return <Loading />;
   }
 
   if (!isAuthenticated) {
@@ -57,7 +58,8 @@ const Doctors = () => {
                       Phone:<span>{element.phone}</span>
                     </p>
                     <p>
-                      DoB:<span>{element.dob.substring(0, 10)}</span>
+                      {/* DoB:<span>{element.dob.substring(0, 10)}</span>    */} 
+                    DoB:<span>{element.dob?.substring(0, 10)}</span>
                     </p>
                     <p>
                       Department:<span>{element.doctrDptmnt}</span>
