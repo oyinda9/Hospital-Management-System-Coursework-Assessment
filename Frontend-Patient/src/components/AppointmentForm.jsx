@@ -83,7 +83,10 @@ const AppointmentForm = () => {
         setHasVisited(""),
         setAddress("");
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error(
+        error.response?.data?.message ||
+          "Something went wrong. Please try again."
+      );
     }
   };
 
@@ -166,22 +169,25 @@ const AppointmentForm = () => {
               })}
             </select>
             <select
-              value={`${doctorFirstName} ${doctorLastName}`}
+              value={
+                doctors.find(
+                  (d) =>
+                    d.firstName === doctorFirstName &&
+                    d.lastName === doctorLastName
+                )?._id || ""
+              }
               onChange={(e) => {
-                const [firstName, lastName] = e.target.value.split(" ");
-                setDoctorFirstName(firstName);
-                setDoctorLastName(lastName);
+                const chosen = doctors.find((d) => d._id === e.target.value);
+                setDoctorFirstName(chosen ? chosen.firstName : "");
+                setDoctorLastName(chosen ? chosen.lastName : "");
               }}
               disabled={!department}
             >
               <option value="">Select Doctor</option>
               {doctors
                 .filter((doctor) => doctor.doctrDptmnt === department)
-                .map((doctor, index) => (
-                  <option
-                    value={`${doctor.firstName} ${doctor.lastName}`}
-                    key={index}
-                  >
+                .map((doctor) => (
+                  <option value={doctor._id} key={doctor._id}>
                     {doctor.firstName} {doctor.lastName}
                   </option>
                 ))}
