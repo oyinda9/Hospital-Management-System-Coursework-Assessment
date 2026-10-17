@@ -36,8 +36,7 @@ export const postAppointment = catchAsyncErrors(async (req, res, next) => {
   ) {
     return next(new ErrorHandler("Please Fill Full Form!", 400));
   }
-  // Fix for D14: validate the appointment date before anything is saved.
-  // Before, any text (for example "not-a-date") or a date in the past was accepted.
+
   const requestedDate = new Date(appointment_date);
   if (Number.isNaN(requestedDate.getTime())) {
     return next(new ErrorHandler("Appointment date is not a valid date!", 400));
@@ -106,7 +105,7 @@ export const getAllAppointments = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
-// Fix for D5: the updateAppointmentStatus function was rewritten to only accept the "status" field from the request body, and to reject any invalid status values.
+
 // export const updateAppointmentStatus = catchAsyncErrors(async (req,res,next)=>{
 //     const {id} = req.params;
 
@@ -130,9 +129,7 @@ export const updateAppointmentStatus = catchAsyncErrors(
   async (req, res, next) => {
     const { id } = req.params;
 
-    // Fix for D5: only the "status" field is read from the request body.
-    // Before, the whole req.body was written to the database, so an admin request
-    // could also overwrite patient, doctor or date fields (mass assignment).
+    // Fix for D5: 
     const { status } = req.body;
 
     // Fix for D5: reject any value that is not one of the three allowed statuses.

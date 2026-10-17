@@ -1,8 +1,5 @@
 // Tests for the admin-only doctors endpoint added as part of the D2 fix.
-// The public endpoint was limited to name and department (see exposure.test.js),
-// so these tests prove two things:
-//   1. an admin can still see the full doctor details (the fix did not remove the feature)
-//   2. nobody else can reach those details
+                                                                                     
 import { describe, it, expect, beforeEach } from "vitest";
 import request from "supertest";
 import app from "../app.js";
