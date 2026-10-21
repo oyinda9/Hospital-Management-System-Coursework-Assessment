@@ -1,145 +1,98 @@
+# Hospital Management System: QA and Testing Case Study
 
+A MERN hospital management system branded *LifeCare* in its code ([Fairooz2150/Hospital-Management-System](https://github.com/Fairooz2150/Hospital-Management-System)) extended with 169 automated tests (unit, API integration, component and end-to-end) and a CI quality gate. The full analysis is in the accompanying report.
 
-# Hospital Management System - Full Stack Project
+## Setup
 
-This project is a comprehensive **Hospital Management System** featuring a responsive design for both administrators and patients. It includes a backend service and two separate frontend implementations for managing hospital operations and patient interactions.
+**Prerequisites:** Node.js 22 and npm. Running the app also needs a MongoDB database and a Cloudinary account; the default tests need neither.
 
-## Features
+### 1. Install dependencies
 
-### [Admin Panel:](https://lifecare-administration.netlify.app)
-- **Doctor Management**: Register and manage doctor profiles.
-- **Admin Management**: Add new administrators.
-- **Appointment Management**: View, approve, or reject patient appointments.
-- **Patient Messages**: Read and respond to patient messages.
+```bash
+git clone https://github.com/oyinda9/Hospital-Management-System-Coursework-Assessment.git
+cd Hospital-Management-System-Coursework-Assessment
 
-### [Patient Portal:](https://lifecare-hospitals.netlify.app)
-- **Registration and Login**: Patients can register and log in.
-- **Appointment Booking**: Schedule appointments with doctors, including patient details and date.
-- **Message Sending**: Send messages to the admin.
-- **Hospital Information**: Learn about Life Care Hospital.
+cd Backend && npm install && cd ..
+cd Frontend-Admin && npm install && cd ..
+cd Frontend-Patient && npm install && cd ..
+```
 
-## Project Structure
+### 2. Configure the backend
 
-The project is organized into the following main folders:
+Create **`Backend/config/config.env`**. The backend doesn't read `.env`.
 
-- **Backend**: Contains the server-side code for handling API requests, authentication, and database interactions.
-- **Frontend-Admin**: The responsive frontend for hospital administrators.
-- **Frontend-Patient**: The responsive frontend for patients.
+```env
+PORT=4000
+MONGO_URI=<your MongoDB connection string>
+JWT_SECRET_KEY=<a long random secret>
+JWT_EXPIRES=7d
+COOKIE_EXPIRE=7
+FRONTEND_ADMIN=http://localhost:5173
+FRONTEND_PATIENT=http://localhost:5174
+CLOUDINARY_CLOUD_NAME=<your cloud name>
+CLOUDINARY_API_KEY=<your API key>
+CLOUDINARY_API_SECRET=<your API secret>
+```
 
-### Backend
-The backend is built using Node.js and Express, and it includes:
-- **Dependencies**: `bcrypt`, `cloudinary`, `cookie-parser`, `cors`, `dotenv`, `express`, `express-fileupload`, `jsonwebtoken`, `mongoose`, `validator`.
-- **Features**: Error handling, input validation, token generation, and user schemas.
+- `PORT` must be `4000`, because both frontends call `http://localhost:4000`.
+- `COOKIE_EXPIRE` (days) is required for login.
+- `FRONTEND_ADMIN` and `FRONTEND_PATIENT` must match the frontend ports.
 
-### Frontend - Admin
-The admin panel is built with React.js and provides a responsive interface for managing hospital operations.
+Don't commit this file.
 
-### Frontend - Patient
-The patient portal is also built with React.js, offering a responsive design for patient interactions.
+### 3. Create the first admin
 
-## Technologies Used
+Public registration only creates patients, so create the first admin with the script, run from `Backend`:
 
-- **Frontend**: React.js, Bootstrap, Axios
-- **Backend**: Node.js, Express, MongoDB, JWT, Bcrypt
-- **Other**: Cloudinary for image uploads, dotenv for environment variables, cookie-parser for handling cookies.
+```bash
+# Bash
+ADMIN_EMAIL=admin@example.com ADMIN_PASSWORD=ChangeMe123 node scripts/createAdmin.js
+```
 
-## Getting Started
+```powershell
+# PowerShell
+$env:ADMIN_EMAIL="admin@example.com"; $env:ADMIN_PASSWORD="ChangeMe123"; node scripts/createAdmin.js
+```
 
-To get started with the project, follow these instructions:
+### 4. Run the application
 
-### Prerequisites
+Run each in its own terminal:
 
-- Node.js and npm (Node Package Manager) installed on your system.
-- A running backend server (see the backend section for setup instructions).
+```bash
+cd Backend && npm run dev                           # API: http://localhost:4000
+cd Frontend-Admin && npm run dev -- --port 5173     # Admin: http://localhost:5173
+cd Frontend-Patient && npm run dev -- --port 5174   # Patient: http://localhost:5174
+```
 
-### Installation
+## Running the tests
 
-1. **Clone the repository:**
+### Backend: 161 tests
 
-   ```bash
-    git clone https://github.com/Fairooz2150/Hospital-Management-System.git
-   ```
-    - First open Hospital-Management-System folder:
-     ```bash
-     cd Hospital-Management-System
-     ```
+```bash
+cd Backend
+npm test              # in-memory MongoDB; no config or secrets needed
+npm run coverage      # same, with coverage report (Backend/coverage/) and quality gate
+npm run test:real     # same tests on a temporary test_ database in your Atlas cluster (dropped afterwards)
+```
 
-2. **Navigate to each folder and install dependencies:**
+### Frontend components: 6 tests
 
-   - For Backend:
-     ```bash
-     cd Backend
-     npm install
-     ```
+```bash
+cd Frontend-Admin && npm test
+cd Frontend-Patient && npm test
+```
 
-   - For Frontend-Admin:
-     ```bash
-     cd Frontend-Admin
-     npm install
-     ```
+### End-to-end: 2 tests (Playwright)
 
-   - For Frontend-Patient:
-     ```bash
-     cd Frontend-Patient
-     npm install
-     ```
+```bash
+cd e2e
+npm install
+npx playwright install chromium   # first time only
+npx playwright test
+```
 
-### Running the Application
+Playwright starts a seeded backend and both frontends itself. Stop anything running on ports 4000, 5173 and 5174 first.
 
+### Continuous integration
 
-1. **Start the Backend server:**
-
-   ```bash
-   cd Backend
-   npm run dev
-   ```
-
-2. **Start the Frontend-Admin application:**
-
-   ```bash
-   cd Frontend-Admin
-   npm run dev
-   ```
-
-3. **Start the Frontend-Patient application:**
-
-   ```bash
-   cd Frontend-Patient
-   npm run dev
-   ```
-
-4. **Open your browser and navigate to:**
-   - Admin Panel: [http://localhost:5174](http://localhost:5174)
-   - Patient Portal: [http://localhost:5175](http://localhost:5175)
-
-### Environment Variables
-
-Ensure you have the following environment variables set in your `.env` file for the backend:
-
-- `PORT`: The port number for the backend server.
-- `MONGO_URI`: The MongoDB connection string.
-- `JWT_SECRET_KEY`: Secret key for JWT.
-- `JWT_EXPIRES`: JWT expiration time.
-- `CLOUDINARY_CLOUD_NAME`: Cloudinary cloud name for image storage.
-- `CLOUDINARY_API_KEY`: Cloudinary API key.
-- `CLOUDINARY_API_SECRET`: Cloudinary API secret.
-
-### Creating an Admin User
-
-1. **Register a new patient user** by following the registration process on the Patient Portal.
-2. **Update the user's role** to "Admin" directly in the database:
-   - Open your MongoDB client (e.g., MongoDB Compass or your terminal).
-   - Find the `users` collection in your database.
-   - Locate the user document with the role of "Patient" that you registered.
-   - Update the `role` field from "Patient" to "Admin".
-
-### Contributing
-
-If you'd like to contribute to the project:
-1. Fork the repository.
-2. Create a feature branch (`git checkout -b feature/YourFeature`).
-3. Commit your changes (`git commit -am 'Add some feature'`).
-4. Push to the branch (`git push origin feature/YourFeature`).
-5. Create a new Pull Request.
-
-
+`.github/workflows/ci.yml` runs `npm run coverage` on every push to `main` and every pull request. The build fails if backend coverage falls below 70% statements, 50% branches, 65% functions or 70% lines.
