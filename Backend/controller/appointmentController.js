@@ -36,7 +36,7 @@ export const postAppointment = catchAsyncErrors(async (req, res, next) => {
   ) {
     return next(new ErrorHandler("Please Fill Full Form!", 400));
   }
-
+// Fix for D14
   const requestedDate = new Date(appointment_date);
   if (Number.isNaN(requestedDate.getTime())) {
     return next(new ErrorHandler("Appointment date is not a valid date!", 400));
@@ -129,10 +129,8 @@ export const updateAppointmentStatus = catchAsyncErrors(
   async (req, res, next) => {
     const { id } = req.params;
 
-    // Fix for D5: 
-    const { status } = req.body;
-
     // Fix for D5: reject any value that is not one of the three allowed statuses.
+    const { status } = req.body;
     if (!["Pending", "Accepted", "Rejected"].includes(status)) {
       return next(
         new ErrorHandler("Status must be Pending, Accepted or Rejected!", 400),
