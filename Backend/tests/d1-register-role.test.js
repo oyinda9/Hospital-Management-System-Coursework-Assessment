@@ -1,6 +1,5 @@
 // D1: public registration must not let a caller choose the Admin role.
-// These tests assert the CORRECT behaviour, so the D1 test is expected to FAIL
-// on the original code (red) and PASS after the fix (green).
+ 
 import { describe, it, expect } from "vitest";
 import request from "supertest";
 import app from "../app.js";
@@ -21,8 +20,7 @@ const payload = (overrides = {}) => ({
 });
 
 describe("D1 - public registration and roles", () => {
-  // Control test: proves the dummy data is valid and normal registration works,
-  // so a failure in the D1 test below is about the role and nothing else.
+  
   it("registers a normal patient and stores the Patient role", async () => {
     const res = await request(app)
       .post("/api/v1/user/patient/register")
@@ -34,9 +32,7 @@ describe("D1 - public registration and roles", () => {
     expect(stored.role).toBe("Patient");
   });
 
-   // The D1 test: a caller asks for Admin on the PUBLIC endpoint.
-  // Correct behaviour: the request is rejected, or the role is forced to Patient.
-  // Either way, no Admin account may be created from this endpoint.
+ 
   it("does not create an Admin account from public registration", async () => {
     const res = await request(app)
       .post("/api/v1/user/patient/register")

@@ -1,5 +1,4 @@
-// Regression test: a registered patient can log in with the right role,
-// and is refused when the role does not match the account.
+ 
 import { describe, it, expect } from "vitest";
 import request from "supertest";
 import app from "../app.js";

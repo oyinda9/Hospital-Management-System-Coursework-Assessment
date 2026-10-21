@@ -1,6 +1,4 @@
-// Registration input validation.
-// Techniques: boundary value analysis and equivalence partitioning.
-// Each row is [label, field, value, should the registration be accepted?].
+ 
 import { describe, it, expect } from "vitest";
 import request from "supertest";
 import app from "../app.js";
@@ -39,8 +37,8 @@ describe("registration boundary values", () => {
       expect(res.status).toBe(200);
       expect(stored).not.toBeNull();
     } else {
-      expect(res.status).not.toBe(200); // invalid data must not be accepted...
-      expect(stored).toBeNull();        // ...or saved
+      expect(res.status).not.toBe(200); // invalid data must not be accepted 
+      expect(stored).toBeNull();        
     }
   });
 });
@@ -67,9 +65,7 @@ describe("registration error handling and uniqueness", () => {
     expect((await register(body)).status).toBe(200);
     expect((await register(body)).status).toBe(400);
   });
-
-  // Race condition: the code checks for an existing email and then creates the user.
-  // With no unique index in the database, simultaneous requests can both pass the check.
+ 
   it("creates only one account when the same email registers at the same moment", async () => {
     const body = userData();
     await Promise.all(Array.from({ length: 10 }, () => register(body)));

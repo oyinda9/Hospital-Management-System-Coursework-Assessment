@@ -21,9 +21,7 @@ export const userData = (overrides = {}) => {
     ...overrides,
   };
 };
-
-// Creates a user directly in the database (so we can create Admins and Doctors),
-// logs in through the real login endpoint, and returns an agent that keeps the cookie.
+ 
 export async function loggedInAgent(role = "Patient", overrides = {}) {
   const data = userData({ role, ...overrides });
   const user = await User.create(data);

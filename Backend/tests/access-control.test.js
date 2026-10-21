@@ -1,6 +1,5 @@
-// Access-control matrix: every protected route is tried by every kind of caller.
-// Technique: table-driven security testing. A caller who should not get in
-// must be refused with a client error (4xx), never allowed (2xx) and never crash the server (5xx).
+// Access-control matrix  every protected route is tried by every kind of caller.
+ 
 import { describe, it, expect } from "vitest";
 import request from "supertest";
 import mongoose from "mongoose";
@@ -10,8 +9,7 @@ import { User } from "../models/userSchema.js";
 import { loggedInAgent } from "./helpers.js";
 
 const anId = () => new mongoose.Types.ObjectId().toString();
-
-// [HTTP method, path, role that is allowed]
+ 
 const routes = [
   ["post", "/api/v1/user/admin/addnew", "Admin"],
   ["get", "/api/v1/user/admin/me", "Admin"],

@@ -10,7 +10,7 @@ import { isAdminAuthenticated, isPatientAuthenticated } from "../middlewares/aut
 
 const token = () => jwt.sign({ id: "user-1" }, process.env.JWT_SECRET_KEY, { expiresIn: "1d" });
 
-// Runs a middleware with a fake request and returns what it passed to next().
+ 
 async function run(middleware, cookies) {
   const req = { cookies };
   const next = vi.fn();

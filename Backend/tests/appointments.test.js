@@ -1,4 +1,4 @@
-// Appointment tests: booking rules (D9, D14), admin update (D5) and a full workflow.
+// Appointment tests  booking rules (D9, D14), admin update (D5) and a full workflow.
 import { describe, it, expect, beforeEach } from "vitest";
 import request from "supertest";
 import mongoose from "mongoose";
