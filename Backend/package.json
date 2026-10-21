@@ -8,7 +8,8 @@
     "dev": "nodemon server.js",
     "test": "vitest run",
     "test:real": "vitest run -c vitest.real.config.js",
-      "coverage": "vitest run --coverage"
+      "coverage": "vitest run --coverage",
+      "perf": "node scripts/perf.js"
   },
   "author": "",
   "license": "ISC",
