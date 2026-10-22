@@ -1,4 +1,3 @@
-// Data exposure: D2 (public doctors endpoint), D10 (password hash) and D3 (token in the body).
 import { describe, it, expect, beforeEach } from "vitest";
 import request from "supertest";
 import app from "../app.js";
@@ -12,7 +11,6 @@ describe("D2 - public doctors endpoint", () => {
     );
   });
 
-  // Control: the public list still shows what patients need.
   it("still shows the doctor's name and department (control)", async () => {
     const res = await request(app).get("/api/v1/user/doctors");
     expect(res.status).toBe(200);
@@ -55,12 +53,10 @@ describe("D10 and D3 - authentication responses", () => {
     expect(res.body).not.toHaveProperty("token");
   });
 
-  // Control: the cookie is still HttpOnly, so scripts in the browser cannot read it.
   it("sets the auth cookie as HttpOnly (control)", async () => {
     const res = await login();
     expect(res.headers["set-cookie"].join(";")).toMatch(/HttpOnly/i);
   });
-    // D3: in production the cookie must only travel over HTTPS (Secure flag).
   it("marks the auth cookie Secure when running in production", async () => {
     const original = process.env.NODE_ENV;
     process.env.NODE_ENV = "production";

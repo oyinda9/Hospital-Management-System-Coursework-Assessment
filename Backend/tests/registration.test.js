@@ -37,8 +37,8 @@ describe("registration boundary values", () => {
       expect(res.status).toBe(200);
       expect(stored).not.toBeNull();
     } else {
-      expect(res.status).not.toBe(200); // invalid data must not be accepted 
-      expect(stored).toBeNull();        
+      expect(res.status).not.toBe(200);
+      expect(stored).toBeNull();
     }
   });
 });
@@ -53,7 +53,6 @@ describe("registration required fields", () => {
 });
 
 describe("registration error handling and uniqueness", () => {
-  // A mistake by the user is a client error (4xx), not a server fault (5xx).
   it("reports an invalid phone number as a client error, not a server error", async () => {
     const res = await register(userData({ phone: "123" }));
     expect(res.status).toBeGreaterThanOrEqual(400);

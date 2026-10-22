@@ -1,5 +1,3 @@
-// UNIT tests for the user schema rules. validate() checks the rules in memory:
-
 import { describe, it, expect } from "vitest";
 import { User } from "../models/userSchema.js";
 
@@ -8,7 +6,6 @@ const valid = () => ({
   aadhar: "123456789012", dob: "1990-01-01", gender: "Male", password: "Password123", role: "Patient",
 });
 
-// Returns the validation error, or undefined when the data is valid.
 const errorFor = async (overrides) => {
   try {
     await new User({ ...valid(), ...overrides }).validate();
@@ -23,14 +20,14 @@ describe("user schema rules", () => {
   });
 
   it.each([
-    ["phone", "012345678", false],   // 9 digits: just below the boundary
-    ["phone", "0123456789", true],   // 10 digits: valid
-    ["phone", "01234567890", false], // 11 digits: just above the boundary
+    ["phone", "012345678", false],
+    ["phone", "0123456789", true],
+    ["phone", "01234567890", false],
     ["aadhar", "12345678901", false],
     ["aadhar", "123456789012", true],
     ["aadhar", "1234567890123", false],
-    ["password", "1234567", false],  // 7 characters
-    ["password", "12345678", true],  // 8 characters
+    ["password", "1234567", false],
+    ["password", "12345678", true],
     ["firstName", "Ab", false],
     ["firstName", "Abc", true],
     ["lastName", "A", false],

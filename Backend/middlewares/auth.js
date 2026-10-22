@@ -10,7 +10,6 @@ export const isAdminAuthenticated = catchAsyncErrors(async (req, res, next) => {
     }
     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
     req.user = await User.findById(decoded.id)
-    // Fix for D13: a valid token for a deleted account must be refused, not crash the request.
     if (!req.user) {
         return next(new ErrorHandler("User no longer exists!", 401))
     }
@@ -28,7 +27,6 @@ export const isPatientAuthenticated = catchAsyncErrors(async (req, res, next) =>
     }
     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
     req.user = await User.findById(decoded.id)
-    // Fix for D13 (same check for the patient routes).
     if (!req.user) {
         return next(new ErrorHandler("User no longer exists!", 401))
     }

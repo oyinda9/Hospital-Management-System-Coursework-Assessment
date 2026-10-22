@@ -1,9 +1,7 @@
-// UNIT tests: each function is tested alone, with fake request/response objects.
 import { describe, it, expect, afterEach } from "vitest";
 import { generateToken } from "../utils/jwtToken.js";
 import ErrorHandler, { errorMiddleware } from "../middlewares/errorMiddleware.js";
 
-// A fake Express response that records what the code under test does with it.
 function fakeRes() {
   const res = { statusCode: null, cookieName: null, cookieValue: null, cookieOptions: null, body: null };
   res.status = (code) => { res.statusCode = code; return res; };
@@ -12,7 +10,6 @@ function fakeRes() {
   return res;
 }
 
-// A fake user document with only what generateToken needs.
 function fakeUser(role) {
   return {
     role,
@@ -58,7 +55,7 @@ describe("generateToken (D3, D10)", () => {
     const res = fakeRes();
     const before = Date.now();
     generateToken(fakeUser("Patient"), "ok", 200, res);
-    const oneDay = 24 * 60 * 60 * 1000; // COOKIE_EXPIRE is "1" in tests/setup.js
+    const oneDay = 24 * 60 * 60 * 1000;
     const delta = res.cookieOptions.expires.getTime() - before;
     expect(delta).toBeGreaterThan(oneDay - 5000);
     expect(delta).toBeLessThan(oneDay + 5000);
@@ -78,7 +75,6 @@ describe("generateToken (D3, D10)", () => {
 });
 
 describe("errorMiddleware (D11 and error mapping)", () => {
-  // Runs the middleware with a fake response and returns { status, message }.
   function run(err) {
     const res = fakeRes();
     errorMiddleware(err, {}, res, () => {});

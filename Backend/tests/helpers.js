@@ -1,21 +1,19 @@
-// Shared helpers for the test files.
 import request from "supertest";
 import app from "../app.js";
 import { User } from "../models/userSchema.js";
 
 let counter = 0;
 
-// Builds valid dummy user data. Every call gets a unique email.
 export const userData = (overrides = {}) => {
   counter += 1;
   return {
     firstName: "Test",
     lastName: "User",
     email: `user${counter}@example.com`,
-    phone: "0123456789",   // exactly 10 digits (schema rule)
+    phone: "0123456789",
     password: "Password123",
     gender: "Male",
-    aadhar: "123456789012", // exactly 12 digits (schema rule)
+    aadhar: "123456789012",
     dob: "1990-01-01",
     role: "Patient",
     ...overrides,

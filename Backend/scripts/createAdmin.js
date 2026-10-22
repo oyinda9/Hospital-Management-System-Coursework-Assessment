@@ -1,5 +1,3 @@
-// this file helps creates the first Admin account in the database the app uses.
- 
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import { dbConnection } from "../database/dbConnection.js";

@@ -14,7 +14,6 @@ export const patientRegister = catchAsyncErrors(async (req, res, next) => {
     gender,
     aadhar,
     dob,
-   // role is included in the payload, but it should not be accepted from the client for security reasons.
   } = req.body;
   if (
     !firstName ||
@@ -24,8 +23,7 @@ export const patientRegister = catchAsyncErrors(async (req, res, next) => {
     !password ||
     !gender ||
     !aadhar ||
-    !dob 
-  //role is included in the payload, but it should not be accepted from the client for security reasons.
+    !dob
   ) {
     return next(new ErrorHandler("Please Fill Full Form!", 400));
   }
@@ -44,7 +42,7 @@ export const patientRegister = catchAsyncErrors(async (req, res, next) => {
     gender,
     dob,
     aadhar,
-    role: "Patient", // fixed on the server; callers cannot choose it (fix for D1)
+    role: "Patient",
   });
   generateToken(user, "User Registered", 200, res);
 });
@@ -121,16 +119,6 @@ export const addNewAdmin = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
-// export const getAllDoctors = catchAsyncErrors(async (req, res, next) => {
-//   const doctors = await User.find({ role: "Doctor" });
-//   res.status(200).json({
-//     success: true,
-//     doctors,
-//   });
-// });
-// Fix for D2: the public endpoint returns only what the booking form needs.
-// Before, it returned every field of every doctor record, including email, phone,
-// date of birth and government ID, to anyone without logging in.
 export const getAllDoctors = catchAsyncErrors(async (req, res, next) => {
     const doctors = await User.find({ role: "Doctor" })
         .select("firstName lastName doctrDptmnt doctrAvatar");
@@ -140,8 +128,6 @@ export const getAllDoctors = catchAsyncErrors(async (req, res, next) => {
     });
 });
 
-// Fix for D2: the full doctor records are still available, but only to a logged-in admin
-// (the route for this function uses isAdminAuthenticated). The admin Doctors page needs them.
 export const getAllDoctorsAdmin = catchAsyncErrors(async (req, res, next) => {
     const doctors = await User.find({ role: "Doctor" });
     res.status(200).json({

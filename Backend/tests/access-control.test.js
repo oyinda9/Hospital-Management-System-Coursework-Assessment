@@ -1,5 +1,3 @@
-// Access-control matrix  every protected route is tried by every kind of caller.
- 
 import { describe, it, expect } from "vitest";
 import request from "supertest";
 import mongoose from "mongoose";
@@ -51,7 +49,6 @@ describe.each(["Admin", "Doctor"])("a logged-in %s on patient-only routes", (act
 });
 
 describe("authentication edge cases", () => {
-  // Control: the right role is let in, so the refusals above are meaningful.
   it("lets each role use its own routes (control)", async () => {
     const admin = await loggedInAgent("Admin");
     expect((await admin.agent.get("/api/v1/user/admin/me")).status).toBe(200);
@@ -76,7 +73,6 @@ describe("authentication edge cases", () => {
     expectRefused(res);
   });
 
-  // A valid token for an account that no longer exists must be refused, not crash the server.
   it("refuses a valid token whose user has been deleted", async () => {
     const { agent } = await loggedInAgent("Patient");
     await User.deleteMany({});

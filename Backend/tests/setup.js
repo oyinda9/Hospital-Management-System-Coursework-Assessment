@@ -57,7 +57,6 @@ afterEach(async () => {
   }
 });
 
-// Runs ONCE at the end.
 afterAll(async () => {
   if (REAL_MODE) {
     

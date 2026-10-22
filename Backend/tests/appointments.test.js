@@ -1,4 +1,3 @@
-// Appointment tests  booking rules (D9, D14), admin update (D5) and a full workflow.
 import { describe, it, expect, beforeEach } from "vitest";
 import request from "supertest";
 import mongoose from "mongoose";
@@ -16,7 +15,6 @@ beforeEach(async () => {
   );
 });
 
-// Valid dummy booking data. The appointment date is in the future.
 const booking = (overrides = {}) => ({
   firstName: "Pat",
   lastName: "Ient",
@@ -49,7 +47,6 @@ describe("booking an appointment", () => {
     expect(saved.doctorId.toString()).toBe(doctor._id.toString());
   });
 
-  // Reviewed during D4 analysis: a forged patientId in the request body must be ignored.
   it("ignores a patientId sent in the request body", async () => {
     const { agent, user } = await loggedInAgent("Patient");
     const fake = new mongoose.Types.ObjectId().toString();

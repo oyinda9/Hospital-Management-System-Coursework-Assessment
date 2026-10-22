@@ -1,5 +1,3 @@
-// UNIT tests for the authentication middleware, with the User model replaced by a fake.
-
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import jwt from "jsonwebtoken";
 
@@ -52,7 +50,7 @@ describe.each([
     const user = { _id: "user-1", role: rightRole };
     User.findById.mockResolvedValue(user);
     const { req, next, arg } = await run(middleware, { [cookie]: token() });
-    expect(arg).toBeUndefined(); // next() called with no error
+    expect(arg).toBeUndefined();
     expect(next).toHaveBeenCalledTimes(1);
     expect(req.user).toBe(user);
   });

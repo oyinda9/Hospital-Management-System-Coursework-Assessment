@@ -26,8 +26,6 @@ export const errorMiddleware = (err, req, res, next) => {
         const message = `Invalid ${err.path}`;
         err = new ErrorHandler(message, 400)
     }
-   // Fix for D11: a validation mistake by the user (for example a wrong phone number length)
-    // is a client error, so it returns 400 instead of the default 500 server error.
         if (err.name === "ValidationError") {
         const message = Object.values(err.errors).map((error) => error.message).join(" ");
         err = new ErrorHandler(message, 400)

@@ -1,14 +1,20 @@
-// UNIT tests for the message controller, with the Message model replaced by a fake.
+
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 vi.mock("../models/messageSchema.js", () => ({
-  Message: { create: vi.fn(), find: vi.fn() },
+  Message: {
+    create: vi.fn(),
+    find: vi.fn(),
+  },
 }));
 
 import { Message } from "../models/messageSchema.js";
-import { sendMessage, getAllMessages } from "../controller/messageController.js";
+import {
+  sendMessage,
+  getAllMessages,
+} from "../controller/messageController.js";
 
-const validBody = {
+const validMessage = {
   firstName: "Ada",
   lastName: "Obi",
   email: "ada@test.com",
@@ -16,44 +22,65 @@ const validBody = {
   message: "I need an appointment.",
 };
 
-function fakeRes() {
-  const res = {};
-  res.status = vi.fn().mockReturnValue(res);
-  res.json = vi.fn().mockReturnValue(res);
-  return res;
-}
+const createMockResponse = () => {
+  const res = {
+    status: vi.fn(),
+    json: vi.fn(),
+  };
 
-// Runs a handler with a fake request and returns what it did.
-function run(handler, body = {}) {
+  res.status.mockReturnValue(res);
+  res.json.mockReturnValue(res);
+
+  return res;
+};
+
+const executeController = (controller, body = {}) => {
   const req = { body };
-  const res = fakeRes();
+  const res = createMockResponse();
   const next = vi.fn();
-  handler(req, res, next);
-  return { res, next };
-}
+
+  controller(req, res, next);
+
+  return { req, res, next };
+};
 
 beforeEach(() => {
-  Message.create.mockReset();
-  Message.find.mockReset();
+  vi.clearAllMocks();
 });
 
-describe("sendMessage", () => {
-  it.each(["firstName", "lastName", "email", "phone", "message"])(
-    "refuses the form with 400 when %s is missing, without saving anything",
-    (field) => {
-      const { next } = run(sendMessage, { ...validBody, [field]: "" });
-      const error = next.mock.calls[0][0];
-      expect(error.statusCode).toBe(400);
-      expect(error.message).toBe("Please Fill Full Form");
-      expect(Message.create).not.toHaveBeenCalled();
-    }
-  );
+describe("sendMessage Controller", () => {
+  it.each([
+    "firstName",
+    "lastName",
+    "email",
+    "phone",
+    "message",
+  ])("should reject the request when %s is missing", (field) => {
+    const { next } = executeController(sendMessage, {
+      ...validMessage,
+      [field]: "",
+    });
 
-  it("saves a complete form and answers 200", async () => {
+    expect(next).toHaveBeenCalledWith(
+      expect.objectContaining({
+        statusCode: 400,
+        message: "Please Fill Full Form",
+      })
+    );
+
+    expect(Message.create).not.toHaveBeenCalled();
+  });
+
+  it("should save a valid message successfully", async () => {
     Message.create.mockResolvedValue({});
-    const { res } = run(sendMessage, validBody);
-    await vi.waitFor(() => expect(res.json).toHaveBeenCalled());
-    expect(Message.create).toHaveBeenCalledWith(validBody);
+
+    const { res } = executeController(sendMessage, validMessage);
+
+    await vi.waitFor(() => {
+      expect(res.json).toHaveBeenCalled();
+    });
+
+    expect(Message.create).toHaveBeenCalledWith(validMessage);
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith({
       success: true,
@@ -61,36 +88,69 @@ describe("sendMessage", () => {
     });
   });
 
-  it("stores only the five known fields and ignores extra ones", async () => {
+  it("should ignore additional fields when saving a message", async () => {
     Message.create.mockResolvedValue({});
-    const { res } = run(sendMessage, { ...validBody, isAdmin: true });
-    await vi.waitFor(() => expect(res.json).toHaveBeenCalled());
-    expect(Message.create).toHaveBeenCalledWith(validBody);
+
+    executeController(sendMessage, {
+      ...validMessage,
+      isAdmin: true,
+    });
+
+    await vi.waitFor(() => {
+      expect(Message.create).toHaveBeenCalled();
+    });
+
+    expect(Message.create).toHaveBeenCalledWith(validMessage);
   });
 
-  it("passes a database error on to the error handler", async () => {
-    const dbError = new Error("database down");
-    Message.create.mockRejectedValue(dbError);
-    const { res, next } = run(sendMessage, validBody);
-    await vi.waitFor(() => expect(next).toHaveBeenCalledWith(dbError));
+  it("should forward database errors to the error handler", async () => {
+    const error = new Error("database down");
+    Message.create.mockRejectedValue(error);
+
+    const { res, next } = executeController(
+      sendMessage,
+      validMessage
+    );
+
+    await vi.waitFor(() => {
+      expect(next).toHaveBeenCalledWith(error);
+    });
+
     expect(res.status).not.toHaveBeenCalled();
   });
 });
 
-describe("getAllMessages", () => {
-  it("returns every message with status 200", async () => {
-    const messages = [{ firstName: "Ada" }, { firstName: "Tom" }];
+describe("getAllMessages Controller", () => {
+  it("should return all messages successfully", async () => {
+    const messages = [
+      { firstName: "Ada" },
+      { firstName: "Tom" },
+    ];
+
     Message.find.mockResolvedValue(messages);
-    const { res } = run(getAllMessages);
-    await vi.waitFor(() => expect(res.json).toHaveBeenCalled());
+
+    const { res } = executeController(getAllMessages);
+
+    await vi.waitFor(() => {
+      expect(res.json).toHaveBeenCalled();
+    });
+
+    expect(Message.find).toHaveBeenCalled();
     expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith({ success: true, messages });
+    expect(res.json).toHaveBeenCalledWith({
+      success: true,
+      messages,
+    });
   });
 
-  it("passes a database error on to the error handler", async () => {
-    const dbError = new Error("database down");
-    Message.find.mockRejectedValue(dbError);
-    const { next } = run(getAllMessages);
-    await vi.waitFor(() => expect(next).toHaveBeenCalledWith(dbError));
+  it("should forward database errors to the error handler", async () => {
+    const error = new Error("database down");
+    Message.find.mockRejectedValue(error);
+
+    const { next } = executeController(getAllMessages);
+
+    await vi.waitFor(() => {
+      expect(next).toHaveBeenCalledWith(error);
+    });
   });
 });

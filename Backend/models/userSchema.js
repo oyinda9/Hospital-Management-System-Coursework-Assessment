@@ -18,8 +18,6 @@ const userSchema = new mongoose.Schema({
     email:{
         type: String,
         required: true,
-         // Fix for D12: the database now rejects a second account with the same email,
-        // even when two registration requests arrive at the same moment.
         unique: true,
         validate : [validator.isEmail, "Please provide a valid Email!"]
     },

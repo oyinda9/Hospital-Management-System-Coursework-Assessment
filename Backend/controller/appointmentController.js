@@ -2,7 +2,6 @@ import { catchAsyncErrors } from "../middlewares/catchAsyncErrors.js";
 import ErrorHandler from "../middlewares/errorMiddleware.js";
 import { Appointment } from "../models/appointmentSchema.js";
 import { User } from "../models/userSchema.js";
-// Fix for D5: the updateAppointmentStatus function was rewritten to only accept the "status" field from the request body, and to reject any invalid status values.
 export const postAppointment = catchAsyncErrors(async (req, res, next) => {
   const {
     firstName,
@@ -36,13 +35,12 @@ export const postAppointment = catchAsyncErrors(async (req, res, next) => {
   ) {
     return next(new ErrorHandler("Please Fill Full Form!", 400));
   }
-// Fix for D14
   const requestedDate = new Date(appointment_date);
   if (Number.isNaN(requestedDate.getTime())) {
     return next(new ErrorHandler("Appointment date is not a valid date!", 400));
   }
   const startOfToday = new Date();
-  startOfToday.setHours(0, 0, 0, 0); // today is still allowed, only earlier days are refused
+  startOfToday.setHours(0, 0, 0, 0);
   if (requestedDate < startOfToday) {
     return next(
       new ErrorHandler("Appointment date cannot be in the past!", 400),
@@ -106,30 +104,10 @@ export const getAllAppointments = catchAsyncErrors(async (req, res, next) => {
 });
 
 
-// export const updateAppointmentStatus = catchAsyncErrors(async (req,res,next)=>{
-//     const {id} = req.params;
-
-//        let appointment = await Appointment.findById(id)
-//     if(!appointment){
-//        return next(new ErrorHandler("Appointment not found!", 404))
-//     }
-//     appointment = await Appointment.findByIdAndUpdate(id, req.body, {
-//         new : true,
-//         runValidators: true,
-//         useFindAndModify: false
-//     } )
-//     res.status(200).json({
-//         success: true,
-//         message: "Appointment Status Updated!",
-//         appointment
-//     })
-// })
-
 export const updateAppointmentStatus = catchAsyncErrors(
   async (req, res, next) => {
     const { id } = req.params;
 
-    // Fix for D5: reject any value that is not one of the three allowed statuses.
     const { status } = req.body;
     if (!["Pending", "Accepted", "Rejected"].includes(status)) {
       return next(

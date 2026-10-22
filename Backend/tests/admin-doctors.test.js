@@ -1,5 +1,3 @@
-// Tests for the admin-only doctors endpoint added as part of the D2 fix.
-                                                                                     
 import { describe, it, expect, beforeEach } from "vitest";
 import request from "supertest";
 import app from "../app.js";
