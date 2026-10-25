@@ -44,7 +44,6 @@ const Login = () => {
   return (
     <>
       {loading && <Loading />}{" "}
-      {/* Display loading component if loading is true */}
       <div className="container form-component ">
         <img src="/logo.png" alt="Life Care" className="logo" />
         <h1 className="form-title">Welcome to Life Care</h1>

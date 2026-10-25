@@ -10,14 +10,11 @@ vi.mock("react-toastify", () => ({
   toast: { success: vi.fn(), error: vi.fn() },
 }));
 
-// Dummy doctors in the shape the public doctors endpoint returns.
-// The Neurology doctor has a trailing space in the first name, like the real test data.
 const doctors = [
   { _id: "1", firstName: "Mary", lastName: "Jones", doctrDptmnt: "Pediatrics" },
   { _id: "2", firstName: "dummy ", lastName: "doctor", doctrDptmnt: "Neurology" },
 ];
 
-// The three dropdowns on the form are: gender, department, doctor.
 const selects = () => screen.getAllByRole("combobox");
 
 async function renderForm() {
